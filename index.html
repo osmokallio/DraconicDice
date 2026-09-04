@@ -16,34 +16,32 @@
 <section id="gameView" class="hidden">
 <div id="winnerBanner" class="card winner hidden"></div>
 <div id="scoreboard" class="grid scoreboard"></div>
-<div class="active-banner"><div class="active-topline"><div><div class="muted">Vuorossa</div><h2 id="activeName"></h2></div><div id="groupBust" class="group-streak">Ryhmän bust-putki <strong>0</strong></div></div><div class="turnbox"><div><div class="muted">Vuoron pankittamaton pistemäärä</div><div id="turnScore" class="turn-score">0</div></div><div class="turn-actions"><button id="bustBtn" class="btn bad">Bust / 0 p</button><button id="addBtn" class="btn">+ pisteet</button><button id="bankBtn" class="btn good">Pankita vuoro</button></div></div></div>
+<div class="active-banner">
+<div class="active-topline"><div><div class="muted">Vuorossa</div><h2 id="activeName"></h2></div><div id="groupBust" class="group-streak">Ryhmän bust-putki <strong>0</strong></div></div>
+<div class="turnbox"><div><div class="muted">Vuoron pankittamaton pistemäärä</div><div id="turnScore" class="turn-score">0</div></div><div class="turn-actions"><button id="bustBtn" class="btn bad">Bust / 0 p</button><button id="bankBtn" class="btn good">Pankita vuoro</button></div></div>
+<div id="mainScoreEntry" class="main-score-entry">
+<div class="score-entry-heading"><div><strong>Pisteiden syöttö</strong><div class="muted">Lisää pisteet suoraan nykyiseen vuoroon.</div></div></div>
+<div class="quick-score-grid main-score-grid" aria-label="Yleiset pistemäärät">
+<button class="score-key quick" data-add-score="50">+50</button><button class="score-key quick" data-add-score="100">+100</button><button class="score-key quick" data-add-score="150">+150</button><button class="score-key quick" data-add-score="200">+200</button>
+<button class="score-key quick" data-add-score="250">+250</button><button class="score-key quick" data-add-score="300">+300</button><button class="score-key quick" data-add-score="400">+400</button><button class="score-key quick" data-add-score="500">+500</button>
+<button class="score-key quick" data-add-score="600">+600</button><button class="score-key quick" data-add-score="750">+750</button><button class="score-key quick" data-add-score="1000">+1000</button><button class="score-key quick" data-add-score="1500">+1500</button>
+</div>
+<details id="customScoreDetails" class="custom-score-details"><summary>Muu pistemäärä</summary><div class="custom-score-pad"><div id="scoreEntry" class="score-entry" aria-live="polite">0</div><div class="number-pad" aria-label="Pistenäppäimistö">
+<button class="score-key" data-digit="1">1</button><button class="score-key" data-digit="2">2</button><button class="score-key" data-digit="3">3</button>
+<button class="score-key" data-digit="4">4</button><button class="score-key" data-digit="5">5</button><button class="score-key" data-digit="6">6</button>
+<button class="score-key" data-digit="7">7</button><button class="score-key" data-digit="8">8</button><button class="score-key" data-digit="9">9</button>
+<button class="score-key" id="scoreClear">C</button><button class="score-key" data-digit="0">0</button><button class="score-key" id="scoreBackspace">⌫</button>
+</div><button id="confirmScore" class="btn primary custom-score-confirm" type="button">Lisää vuoroon</button></div></details>
+</div>
+</div>
 <div class="grid setup">
 <div class="card"><h2>Noppalaskuri</h2><p class="muted">Napauta yhden heiton nopat. Laskuri näyttää heiton parhaan pistemäärän.</p><div id="dice" class="dice"></div><div class="row" style="margin-top:10px"><div id="calcResult" class="calc-result" style="flex:1">Valitse nopat</div><button id="useCalc" class="btn primary">Lisää vuoroon</button><button id="removeDie" class="btn">↶ Noppa</button><button id="clearDice" class="btn">Tyhjennä</button></div></div>
 <div class="card"><h2>Peli</h2><div class="toolbar"><button id="undoBtn" class="btn">↶ Kumoa</button><button id="endBtn" class="btn">Lopeta peli</button><button id="newBtn" class="btn">Uusi peli</button><button id="rulesBtn" class="btn">Säännöt</button><button id="exportBtn" class="btn">Vie JSON</button><label class="btn">Tuo JSON<input id="importFile" type="file" accept="application/json" hidden></label></div><h3 style="margin-top:16px">Vuorohistoria</h3><div id="turnLog" class="log"></div></div>
 </div>
 </section>
 </div>
-
-<dialog id="scoreDialog" class="score-dialog">
-<h2>Lisää pisteet vuoroon</h2>
-<p class="muted">Valitse yleinen pistemäärä tai syötä luku näytön näppäimillä.</p>
-<div id="scoreEntry" class="score-entry" aria-live="polite">0</div>
-<div class="quick-score-grid" aria-label="Yleiset pistemäärät">
-<button class="score-key quick" data-score="50">50</button><button class="score-key quick" data-score="100">100</button><button class="score-key quick" data-score="150">150</button><button class="score-key quick" data-score="200">200</button>
-<button class="score-key quick" data-score="250">250</button><button class="score-key quick" data-score="300">300</button><button class="score-key quick" data-score="400">400</button><button class="score-key quick" data-score="500">500</button>
-<button class="score-key quick" data-score="600">600</button><button class="score-key quick" data-score="750">750</button><button class="score-key quick" data-score="1000">1000</button><button class="score-key quick" data-score="1500">1500</button>
-</div>
-<div class="number-pad" aria-label="Pistenäppäimistö">
-<button class="score-key" data-digit="1">1</button><button class="score-key" data-digit="2">2</button><button class="score-key" data-digit="3">3</button>
-<button class="score-key" data-digit="4">4</button><button class="score-key" data-digit="5">5</button><button class="score-key" data-digit="6">6</button>
-<button class="score-key" data-digit="7">7</button><button class="score-key" data-digit="8">8</button><button class="score-key" data-digit="9">9</button>
-<button class="score-key" id="scoreClear">C</button><button class="score-key" data-digit="0">0</button><button class="score-key" id="scoreBackspace">⌫</button>
-</div>
-<div class="dialog-actions"><form method="dialog"><button class="btn" type="submit">Peruuta</button></form><button id="confirmScore" class="btn primary" type="button">Lisää pisteet</button></div>
-</dialog>
-
 <dialog id="rulesDialog"><h2>KCD2-noppapelin pisteytys</h2><div class="rules"><table><tr><td>Yksi 1</td><td>100</td></tr><tr><td>Yksi 5</td><td>50</td></tr><tr><td>Kolme 1:tä</td><td>1000</td></tr><tr><td>Kolme 2/3/4/5/6</td><td>200 / 300 / 400 / 500 / 600</td></tr><tr><td>4 / 5 / 6 samaa</td><td>kolmosarvo ×2 / ×4 / ×8</td></tr><tr><td>1–2–3–4–5</td><td>500</td></tr><tr><td>2–3–4–5–6</td><td>750</td></tr><tr><td>1–2–3–4–5–6</td><td>1500</td></tr></table><p>Vuorolla pisteitä voi pankittaa milloin tahansa. Jos seuraava heitto ei sisällä pisteyttävää yhdistelmää, vuoron pankittamattomat pisteet menetetään. Jos kaikki kuusi noppaa pisteyttävät, kaikki kuusi saa heittää uudelleen.</p></div><form method="dialog"><button class="btn primary">Sulje</button></form></dialog>
-<dialog id="statsDialog"><h2>Tilastot</h2><div id="statsContent"></div><div class="toolbar" style="margin-top:14px"><button id="clearHistory" class="btn bad" type="button">Tyhjennä historia</button><form method="dialog"><button class="btn">Sulje</button></form></div></dialog>
+<dialog id="statsDialog" class="stats-dialog"><h2>Tilastot ja pelihistoria</h2><div id="statsContent"></div><div class="toolbar stats-footer"><button id="clearHistory" class="btn bad" type="button">Tyhjennä historia</button><form method="dialog"><button class="btn">Sulje</button></form></div></dialog>
 <script src="app.js"></script>
 </body>
 </html>
