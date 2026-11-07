@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>KCD2 Dice Tracker</title>
-<link rel="stylesheet" href="styles.css?v=4">
+<link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
 <div class="wrap">
@@ -18,7 +18,7 @@
 <div id="scoreboard" class="grid scoreboard"></div>
 <div class="active-banner">
 <div class="active-topline"><div><div class="muted">Vuorossa</div><h2 id="activeName"></h2></div><div id="groupBust" class="group-streak">Ryhmän bust-putki <strong>0</strong></div></div>
-<div class="turnbox"><div><div class="muted">Vuoron pankittamaton pistemäärä</div><div id="turnScore" class="turn-score">0</div></div><div class="turn-actions"><button id="bustBtn" class="btn bad">Bust / 0 p</button><button id="bankBtn" class="btn good">Pankita vuoro</button></div></div>
+<div class="turnbox"><div><div class="muted">Vuoron pankittamaton pistemäärä</div><div class="turn-score-line"><div id="turnScore" class="turn-score">0</div><button id="editTurnScoreBtn" class="btn score-edit-btn" type="button">✎ Korjaa pisteet</button></div></div><div class="turn-actions"><button id="bustBtn" class="btn bad">Bust / 0 p</button><button id="bankBtn" class="btn good">Pankita vuoro</button></div></div>
 <div id="mainScoreEntry" class="main-score-entry">
 <div class="score-entry-heading"><div><strong>Pisteiden syöttö</strong><div class="muted">Lisää pisteet suoraan nykyiseen vuoroon.</div></div></div>
 <div class="quick-score-grid main-score-grid" aria-label="Yleiset pistemäärät">
@@ -40,8 +40,17 @@
 </div>
 </section>
 </div>
+<dialog id="editTurnScoreDialog" class="edit-score-dialog">
+<h2>Korjaa vuoron pisteet</h2>
+<p class="muted">Anna vuoron uusi pankittamaton pistemäärä. Jo pankitetut pisteet eivät muutu.</p>
+<form id="editTurnScoreForm">
+<label for="editTurnScoreInput">Pankittamattomat pisteet</label>
+<input id="editTurnScoreInput" type="number" min="0" step="1" inputmode="numeric" required>
+<div class="row score-edit-actions"><button id="cancelEditTurnScore" class="btn" type="button">Peruuta</button><button class="btn primary" type="submit">Tallenna</button></div>
+</form>
+</dialog>
 <dialog id="rulesDialog"><h2>KCD2-noppapelin pisteytys</h2><div class="rules"><table><tr><td>Yksi 1</td><td>100</td></tr><tr><td>Yksi 5</td><td>50</td></tr><tr><td>Kolme 1:tä</td><td>1000</td></tr><tr><td>Kolme 2/3/4/5/6</td><td>200 / 300 / 400 / 500 / 600</td></tr><tr><td>4 / 5 / 6 samaa</td><td>kolmosarvo ×2 / ×4 / ×8</td></tr><tr><td>1–2–3–4–5</td><td>500</td></tr><tr><td>2–3–4–5–6</td><td>750</td></tr><tr><td>1–2–3–4–5–6</td><td>1500</td></tr></table><p>Vuorolla pisteitä voi pankittaa milloin tahansa. Jos seuraava heitto ei sisällä pisteyttävää yhdistelmää, vuoron pankittamattomat pisteet menetetään. Jos kaikki kuusi noppaa pisteyttävät, kaikki kuusi saa heittää uudelleen.</p></div><form method="dialog"><button class="btn primary">Sulje</button></form></dialog>
 <dialog id="statsDialog" class="stats-dialog"><h2>Tilastot ja pelihistoria</h2><div id="statsContent"></div><div class="toolbar stats-footer"><button id="clearHistory" class="btn bad" type="button">Tyhjennä historia</button><form method="dialog"><button class="btn">Sulje</button></form></div></dialog>
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>
