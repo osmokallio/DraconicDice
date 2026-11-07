@@ -16,6 +16,28 @@ function movePlayer(i,d){const j=i+d;if(j<0||j>=state.players.length)return;[sta
 function startGame(){if(state.players.length<2)return alert('Lisää vähintään kaksi pelaajaa.');state.target=+$('target').value;const starter=$('starter').value;state.game={id:uid(),startedAt:new Date().toISOString(),players:state.players.map(p=>({...p,score:0})),active:Math.max(0,state.players.findIndex(p=>p.id===starter)),turnScore:0,turns:[],undo:[],complete:false,winners:[]};resetTurnInputs();save();render()}
 function snapshot(){const g=state.game;g.undo.push(JSON.stringify({players:g.players,active:g.active,turnScore:g.turnScore,turns:g.turns,complete:g.complete,winners:g.winners}));if(g.undo.length>50)g.undo.shift()}
 function addPoints(v){const g=state.game;if(!g||g.complete)return;v=Number(v);if(!Number.isFinite(v)||v<=0)return;snapshot();g.turnScore+=Math.round(v);save();render()}
+function openTurnScoreEditor(){
+  const g=state.game;if(!g||g.complete)return;
+  const input=$('editTurnScoreInput');
+  input.setCustomValidity('');
+  input.value=String(g.turnScore);
+  $('editTurnScoreDialog').showModal();
+  input.focus();
+  input.select();
+}
+function saveTurnScoreCorrection(event){
+  event.preventDefault();
+  const g=state.game;
+  if(!g||g.complete){$('editTurnScoreDialog').close();return}
+  const input=$('editTurnScoreInput'),value=Number(input.value);
+  if(!input.value.trim()||!Number.isSafeInteger(value)||value<0){
+    input.setCustomValidity('Anna nolla tai positiivinen kokonaisluku.');
+    input.reportValidity();
+    return;
+  }
+  if(value!==g.turnScore){snapshot();g.turnScore=value;save();render()}
+  $('editTurnScoreDialog').close();
+}
 function resetTurnInputs(){selectedDice=[];manualScore='';if($('customScoreDetails'))$('customScoreDetails').open=false;renderScorePad()}
 function bank(){const g=state.game;if(!g||g.complete||g.turnScore<=0)return;snapshot();const p=g.players[g.active],pts=g.turnScore;p.score+=pts;g.turns.push({n:g.turns.length+1,playerId:p.id,player:p.name,points:pts,bust:false,total:p.score});g.turnScore=0;resetTurnInputs();if(p.score>=state.target)finishGame([p.id]);else g.active=(g.active+1)%g.players.length;save();render()}
 function bust(){const g=state.game;if(!g||g.complete)return;snapshot();const p=g.players[g.active];g.turns.push({n:g.turns.length+1,playerId:p.id,player:p.name,points:0,bust:true,total:p.score});g.turnScore=0;g.active=(g.active+1)%g.players.length;resetTurnInputs();save();render()}
@@ -66,7 +88,7 @@ function renderGame(){
     d.innerHTML=`<div class="rank">#${rank}</div><h3>${esc(p.name)}</h3><div class="score">${fmt(p.score)}</div><div class="muted">${fmt(Math.max(0,state.target-p.score))} pistettä tavoitteeseen</div><div class="streak-line ${streak.current?'hot':''}">💥 Bust-putki <strong>${streak.current}</strong> <span class="muted">· pisin ${streak.longest}</span></div>`;$('scoreboard').appendChild(d)
   });
   const group=streakStats(g.turns);$('groupBust').innerHTML=`Ryhmän bust-putki <strong>${group.current}</strong> <span>· pisin ${group.longest}</span>`;$('groupBust').classList.toggle('hot',group.current>0);
-  $('activeName').textContent=g.complete?'Peli päättynyt':g.players[g.active].name;$('turnScore').textContent=fmt(g.turnScore);$('bankBtn').disabled=g.turnScore<=0||g.complete;$('bustBtn').disabled=g.complete;$('undoBtn').disabled=!g.undo.length;
+  $('activeName').textContent=g.complete?'Peli päättynyt':g.players[g.active].name;$('turnScore').textContent=fmt(g.turnScore);$('bankBtn').disabled=g.turnScore<=0||g.complete;$('bustBtn').disabled=g.complete;$('editTurnScoreBtn').disabled=g.complete;$('undoBtn').disabled=!g.undo.length;
   document.querySelectorAll('[data-add-score],[data-digit]').forEach(b=>b.disabled=g.complete);$('scoreClear').disabled=g.complete;$('scoreBackspace').disabled=g.complete;renderScorePad();
   const wb=$('winnerBanner');if(g.complete){const names=g.players.filter(p=>g.winners.includes(p.id)).map(p=>p.name);wb.classList.remove('hidden');wb.innerHTML=`<h2>🏆 ${esc(names.join(', '))}</h2><div>Peli päättyi. Voittopisteet: ${fmt(Math.max(...g.players.map(p=>p.score)))}</div>`}else wb.classList.add('hidden');
   $('turnLog').innerHTML=[...g.turns].reverse().map(t=>`<div class="log-row"><span>#${t.n}</span><span>${esc(t.player)} ${t.bust?'<span class="bust-tag">BUST</span>':''}</span><strong>${t.points?`+${fmt(t.points)}`:'0'}</strong></div>`).join('')||'<div class="muted">Ei vielä vuoroja.</div>'
@@ -96,7 +118,7 @@ function showStats(){
 }
 function exportData(){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.href=url;a.download='kcd2-dice-tracker-backup.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function importData(file){const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x||!Array.isArray(x.players)||!Array.isArray(x.history))throw new Error('bad data');state={...state,...x};save();applyTheme();resetTurnInputs();render();alert('Varmuuskopio tuotu.')}catch{alert('Tiedosto ei ole kelvollinen KCD2 Dice Tracker -varmuuskopio.')}};r.onerror=()=>alert('Tiedoston lukeminen epäonnistui.');r.readAsText(file)}
-$('addPlayer').onclick=addPlayer;$('playerName').onkeydown=e=>{if(e.key==='Enter')addPlayer()};$('startGame').onclick=startGame;$('bankBtn').onclick=bank;$('bustBtn').onclick=bust;$('undoBtn').onclick=undo;$('endBtn').onclick=manualEnd;$('newBtn').onclick=newGame;$('rulesBtn').onclick=()=>$('rulesDialog').showModal();$('statsBtn').onclick=showStats;$('clearHistory').onclick=()=>{if(confirm('Poistetaanko koko pelihistoria?')){state.history=[];save();$('statsDialog').close();showStats()}};$('exportBtn').onclick=exportData;$('importFile').onchange=e=>{const f=e.target.files?.[0];if(f)importData(f);e.target.value=''};$('useCalc').onclick=()=>{const v=calcScore(selectedDice);if(v){addPoints(v);clearDice()}};$('clearDice').onclick=clearDice;$('removeDie').onclick=removeLastDie;$('themeBtn').onclick=()=>{state.theme=document.documentElement.classList.contains('dark')?'light':'dark';save();applyTheme()};
+$('addPlayer').onclick=addPlayer;$('playerName').onkeydown=e=>{if(e.key==='Enter')addPlayer()};$('startGame').onclick=startGame;$('bankBtn').onclick=bank;$('bustBtn').onclick=bust;$('editTurnScoreBtn').onclick=openTurnScoreEditor;$('editTurnScoreForm').onsubmit=saveTurnScoreCorrection;$('cancelEditTurnScore').onclick=()=>$('editTurnScoreDialog').close();$('editTurnScoreInput').oninput=e=>e.target.setCustomValidity('');$('undoBtn').onclick=undo;$('endBtn').onclick=manualEnd;$('newBtn').onclick=newGame;$('rulesBtn').onclick=()=>$('rulesDialog').showModal();$('statsBtn').onclick=showStats;$('clearHistory').onclick=()=>{if(confirm('Poistetaanko koko pelihistoria?')){state.history=[];save();$('statsDialog').close();showStats()}};$('exportBtn').onclick=exportData;$('importFile').onchange=e=>{const f=e.target.files?.[0];if(f)importData(f);e.target.value=''};$('useCalc').onclick=()=>{const v=calcScore(selectedDice);if(v){addPoints(v);clearDice()}};$('clearDice').onclick=clearDice;$('removeDie').onclick=removeLastDie;$('themeBtn').onclick=()=>{state.theme=document.documentElement.classList.contains('dark')?'light':'dark';save();applyTheme()};
 document.querySelectorAll('[data-add-score]').forEach(b=>b.onclick=()=>addPoints(Number(b.dataset.addScore)));
 document.querySelectorAll('[data-digit]').forEach(b=>b.onclick=()=>appendScoreDigit(b.dataset.digit));
 $('scoreBackspace').onclick=backspaceScore;$('scoreClear').onclick=clearScore;$('confirmScore').onclick=confirmManualScore;
